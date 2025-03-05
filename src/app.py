@@ -20,6 +20,7 @@ from src import (
 from PIL import Image
 from celluloid import Camera
 import hashlib
+import datetime
 
 st.set_page_config(layout="wide")
 # st.title("Static Print Generator")
@@ -39,10 +40,11 @@ kwh_consumption = st.sidebar.number_input(
 max_elevation = st.sidebar.number_input(
     "Maximum Elevation (m)", min_value=0.0, value=0.0, step=1.0, format="%.0f"
 )
-license_plate = st.sidebar.text_input("License Plate", value="")
+license_plate = st.sidebar.text_input("License Plate", value="", placeholder="BRA2E19")
 
-user_name = st.sidebar.text_input("User Name", value="")
-event_date = st.sidebar.text_input("Date", value="")
+current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+user_name = st.sidebar.text_input("User Name", placeholder="Driver", value="")
+event_date = st.sidebar.text_input("Date", value=current_date)
 
 # Color palette selection
 st.sidebar.header("Visual Parameters")
