@@ -41,6 +41,9 @@ max_elevation = st.sidebar.number_input(
 )
 license_plate = st.sidebar.text_input("License Plate", value="")
 
+user_name = st.sidebar.text_input("User Name", value="")
+event_date = st.sidebar.text_input("Date", value="")
+
 # Color palette selection
 st.sidebar.header("Visual Parameters")
 palette_choice = st.sidebar.radio(
@@ -172,7 +175,7 @@ if uploaded_file is not None and generate_button:
                 path = load_track(gpx_path)
 
                 # Create a hash from the statistics
-                hash_input = f"{distance}{avg_speed}{total_time}{kwh_consumption}{max_elevation}{license_plate}"
+                hash_input = f"{distance}{avg_speed}{total_time}{kwh_consumption}{max_elevation}{license_plate}{user_name}{event_date}"
                 stats_hash = hashlib.md5(hash_input.encode()).hexdigest()
 
                 # Convert first 8 characters of hex hash to integer for seed
