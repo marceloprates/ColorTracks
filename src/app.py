@@ -1,20 +1,15 @@
 import streamlit as st
 import numpy as np
 from matplotlib import pyplot as plt
-import gpxpy
-import io
 import tempfile
 import os
 from src import (
-    path2curve,
     process_and_smooth_path,
-    standarize_path,
     compute_streamlines,
     load_track,
     main,
     compute_vector_field,
     draw_frame,
-    stylize,
     fig2img,
     add_border,
 )
@@ -22,10 +17,8 @@ from PIL import Image, ImageChops, ImageDraw, ImageFont
 from celluloid import Camera
 import hashlib
 import datetime
-import shutil
 import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
-import time
 
 # Constants
 FONT_PATH = "assets/PeugeotNew-Light.otf"
@@ -171,22 +164,18 @@ class GPXVisualizer:
 
         self.route_selection = st.sidebar.radio(
             "Select Route",
-            ["Upload your own", "Mountain Pass", "Coastal Drive", "Urban Loop"],
+            ["Jardim Paulista 1", "Jardim Paulista 2", "Pinheiros 1", "Pinheiros 2"],
             help="Choose from predefined routes or upload your own",
         )
-
-        # If a predefined route is selected, disable file uploader and use stored route
-        if self.route_selection != "Upload your own":
-            route_files = {
-                "Jardim Paulista 1": "assets/paths/jardim-paulista_1.gpx",
-                "Jardim Paulista 2": "assets/paths/jardim-paulista_2.gpx",
-                "Pinheiros 1": "assets/paths/pinheiros_1.gpx",
-                "Pinheiros 2": "assets/paths/pinheiros_2.gpx",
-            }
-            self.gpx_path = route_files[self.route_selection]
-            self.use_uploaded_file = False
-        else:
-            self.use_uploaded_file = True
+        route_files = {
+            "Jardim Paulista 1": "assets/paths/jardim-paulista_1.gpx",
+            "Jardim Paulista 2": "assets/paths/jardim-paulista_2.gpx",
+            "Pinheiros 1": "assets/paths/pinheiros_1.gpx",
+            "Pinheiros 2": "assets/paths/pinheiros_2.gpx",
+        }
+        self.gpx_path = route_files[self.route_selection]
+        self.uploaded_file = None
+        self.use_uploaded_file = False
 
         # Set palette based on selection
         if palette_choice == "Palette 1":
@@ -252,22 +241,22 @@ class GPXVisualizer:
         """Setup main content area with file uploader and time slider."""
         self.time_slider = st.slider("Time", 0.0, 1.0, 0.5, 0.01)
 
-        st.header("Upload Path Data")
-        self.uploaded_file = st.file_uploader(
-            "Choose a GPX file containing path coordinates", type=["gpx"]
-        )
         self.generate_button = st.button("Generate Visualization")
 
     def process_gpx_data(self):
         """Process uploaded GPX data and generate visualization."""
-        if self.uploaded_file is None or not self.generate_button:
+        if not self.generate_button:
             return
 
         try:
             # Save uploaded file to a temporary file
             with tempfile.NamedTemporaryFile(delete=False, suffix=".gpx") as tmp_file:
-                tmp_file.write(self.uploaded_file.getvalue())
+                # Read from the predefined route path
+                with open(self.gpx_path, "rb") as src_file:
+                    tmp_file.write(src_file.read())
+                tmp_file.flush()
                 gpx_path = tmp_file.name
+                print(gpx_path)
 
             try:
                 self._load_or_compute_path_data(gpx_path)
