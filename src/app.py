@@ -223,7 +223,7 @@ class GPXVisualizer:
         self.show_border = border_option == "With Border"
 
         # Set figure dimensions based on border choice
-        self.dpi = 300
+        self.dpi = 150
         if self.show_border:
             self.figsize = (878 / self.dpi, 878 / self.dpi)
         else:
@@ -377,6 +377,10 @@ class GPXVisualizer:
                 user_name=self.user_name,
                 event_date=self.event_date,
                 font=self.font,
+            )
+            # Resize 50%
+            border_img = border_img.resize(
+                (int(border_img.width / 2), int(border_img.height / 2))
             )
             border_img.save("tmp.png")
 
