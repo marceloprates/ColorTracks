@@ -28,10 +28,24 @@ from PIL import Image
 import hashlib
 import pickle
 import os
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
-# from IPython.display import Image as IImage, display
 
 np.random.seed(3)
+
+
+def get_transparent_bbox(image):
+
+    # Get the alpha channel (transparency mask)
+    alpha = image.split()[-1]
+
+    # Invert the alpha channel
+    inverted_alpha = ImageChops.invert(alpha)
+
+    # Get the bounding box of the non-zero regions in the inverted alpha channel
+    bbox = inverted_alpha.getbbox()
+
+    return bbox
 
 
 def path2curve(graph, path):
@@ -530,7 +544,47 @@ def load_track(gpx_path):
     return path
 
 
-def draw_frame(fig, ax, t, tmax, streamlines, palette, background_color="#000"):
+def add_border(img, border, user_name, event_date, font):
+    # Get the transparent area bbox
+    bbox = get_transparent_bbox(border)
+    # Resize img to fit exactly in the transparent area
+    img_resized = img.resize((bbox[2] - bbox[0], bbox[3] - bbox[1]))
+
+    # Paste the resized image into the transparent area
+    border.paste(img_resized, bbox)
+
+    # Add text to the image
+    draw = ImageDraw.Draw(border)
+
+    # Add statistics text to the image
+    if user_name:
+        draw.text(
+            (0.25 * border.width, 0.19 * border.height),
+            f"By {user_name}",
+            fill="black",
+            font=font,
+        )
+
+    if event_date:
+        draw.text(
+            (0.1 * border.width, 0.75 * border.height),
+            f"{event_date}",
+            fill="black",
+            font=font,
+        )
+
+    return border
+
+
+def draw_frame(
+    fig,
+    ax,
+    t,
+    tmax,
+    streamlines,
+    palette,
+    background_color="#000",
+):
     """
     Draw a frame with streamlines and apply stylization effects.
 
