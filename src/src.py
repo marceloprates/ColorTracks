@@ -3,9 +3,8 @@ import re
 import cv2
 import numpy as np
 import gpxpy
-import networkx as nx
-import osmnx as ox
-from noise import pnoise1, pnoise2, pnoise3
+
+# import osmnx as ox
 from tqdm import tqdm
 from PIL import Image, ImageDraw, ImageFilter
 from matplotlib import pyplot as plt

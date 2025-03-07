@@ -169,6 +169,25 @@ class GPXVisualizer:
             help="Choose between two color schemes",
         )
 
+        self.route_selection = st.sidebar.radio(
+            "Select Route",
+            ["Upload your own", "Mountain Pass", "Coastal Drive", "Urban Loop"],
+            help="Choose from predefined routes or upload your own",
+        )
+
+        # If a predefined route is selected, disable file uploader and use stored route
+        if self.route_selection != "Upload your own":
+            route_files = {
+                "Jardim Paulista 1": "assets/paths/jardim-paulista_1.gpx",
+                "Jardim Paulista 2": "assets/paths/jardim-paulista_2.gpx",
+                "Pinheiros 1": "assets/paths/pinheiros_1.gpx",
+                "Pinheiros 2": "assets/paths/pinheiros_2.gpx",
+            }
+            self.gpx_path = route_files[self.route_selection]
+            self.use_uploaded_file = False
+        else:
+            self.use_uploaded_file = True
+
         # Set palette based on selection
         if palette_choice == "Palette 1":
             self.palette = ["#000", "#00A3E0", "#D0D3D4", "#73FDEA", "#BFDD0D"]
