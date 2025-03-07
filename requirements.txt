@@ -5,6 +5,6 @@ gpxpy==1.6.2
 opencv-python==4.11.0.86
 networkx==3.4.2
 scikit-learn==1.4.2
-numpy==1.24.4  # Updated to a compatible version
+#numpy==1.24.4  # Updated to a compatible version
 tqdm==4.67.1
 shapely==2.0.7
