@@ -361,7 +361,7 @@ class GPXVisualizer:
         original_filename = os.path.splitext(self.uploaded_file.name)[0]
         os.makedirs("animations", exist_ok=True)
         output_filename = f"animations/{original_filename}.mp4"
-        anim.save(output_filename, fps=4 * self.fps)
+        anim.save(output_filename, fps=4 * self.fps, writer="ffmpeg")
 
         # Repeat the animation
         repeated_filename = f"animations/{original_filename}_repeated.mp4"
