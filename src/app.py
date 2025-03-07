@@ -24,7 +24,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # Constants
 FONT_PATH = "assets/PeugeotNew-Light.otf"
-BORDER_PATH = "assets/2025_PEUGEOT_DesignWeek_Moldura copiar.png"
+BORDER_PATH = "assets/2025_PEUGEOT_DesignWeek_Moldura copy.png"
 FONT_SIZE = 24
 
 
@@ -220,7 +220,7 @@ class GPXVisualizer:
         if self.output_type == "Animation":
             st.sidebar.header("Animation Parameters")
             self.frames = st.sidebar.slider("Number of Frames", 100, 1000, 450)
-            self.fps = st.sidebar.slider("Frames per Second", 15, 60, 30, 15)
+            self.fps = st.sidebar.slider("Frames per Second", 15, 60, 60, 15)
 
     def _setup_border_options(self):
         """Setup border options."""
@@ -403,7 +403,7 @@ class GPXVisualizer:
         # Repeat the animation
         repeated_filename = f"animations/{original_filename}_repeated.mp4"
         bordered_filename = f"animations/{original_filename}_repeated_bordered.mp4"
-        VideoProcessor.repeat_video(output_filename, repeated_filename)
+        VideoProcessor.repeat_video(output_filename, repeated_filename, repeats=1)
 
         final_video_path = repeated_filename
 
