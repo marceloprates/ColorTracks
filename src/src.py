@@ -380,28 +380,28 @@ def compute_streamlines(
     Returns:
     list: A list of streamlines for each frame.
     """
-    # Create a hash of the inputs
-    input_hash = hashlib.md5(
-        pickle.dumps(
-            (
-                x,
-                y,
-                t,
-                frames,
-                num_deviations,
-                deviation_scale,
-                tmax,
-                t_eval_points,
-                method,
-            )
-        )
-    ).hexdigest()
-    cache_file = f"streamlines_{input_hash}.pkl"
+    ## Create a hash of the inputs
+    # input_hash = hashlib.md5(
+    #    pickle.dumps(
+    #        (
+    #            x,
+    #            y,
+    #            t,
+    #            frames,
+    #            num_deviations,
+    #            deviation_scale,
+    #            tmax,
+    #            t_eval_points,
+    #            method,
+    #        )
+    #    )
+    # ).hexdigest()
+    # cache_file = f"streamlines_{input_hash}.pkl"
 
-    if memoize and os.path.exists(cache_file):
-        print(f"Loading streamlines from cache: {cache_file}")
-        with open(cache_file, "rb") as f:
-            streamlines = pickle.load(f)
+    # if memoize and os.path.exists(cache_file):
+    #    print(f"Loading streamlines from cache: {cache_file}")
+    #    with open(cache_file, "rb") as f:
+    #        streamlines = pickle.load(f)
 
     streamlines = []
     for t_ in np.linspace(t.min(), t.max(), frames)[::1]:
@@ -431,9 +431,9 @@ def compute_streamlines(
                 }
             )
 
-    if memoize:
-        with open(cache_file, "wb") as f:
-            pickle.dump(streamlines, f)
+    # if memoize:
+    #    with open(cache_file, "wb") as f:
+    #        pickle.dump(streamlines, f)
 
     if show:
         # Plot the streamlines

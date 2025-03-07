@@ -217,8 +217,8 @@ class GPXVisualizer:
 
         if self.output_type == "Animation":
             st.sidebar.header("Animation Parameters")
-            self.frames = st.sidebar.slider("Number of Frames", 100, 1000, 900)
-            self.fps = st.sidebar.slider("Frames per Second", 15, 60, 30, 15)
+            self.frames = st.sidebar.slider("Number of Frames", 100, 1000, 450)
+            self.fps = st.sidebar.slider("Frames per Second", 15, 60, 15, 15)
 
     def _setup_border_options(self):
         """Setup border options."""
@@ -269,6 +269,7 @@ class GPXVisualizer:
             finally:
                 # Clean up the temporary file
                 os.unlink(gpx_path)
+                # st.runtime.legacy_caching.clear_cache()
 
         except Exception as e:
             st.error(f"Error processing path: {str(e)}")
@@ -366,7 +367,7 @@ class GPXVisualizer:
 
         # Save animation as MP4
         anim = cam.animate()
-        original_filename = os.path.splitext(self.uploaded_file.name)[0]
+        original_filename = os.path.splitext(self.gpx_path)[1]
         os.makedirs("animations", exist_ok=True)
         output_filename = f"animations/{original_filename}.mp4"
         anim.save(output_filename, fps=4 * self.fps, writer="ffmpeg")
@@ -386,7 +387,7 @@ class GPXVisualizer:
                 event_date=self.event_date,
                 font=self.font,
             )
-            # Resize 50%
+            # Resize 25%
             border_img = border_img.resize(
                 (int(border_img.width / 2), int(border_img.height / 2))
             )
@@ -460,7 +461,7 @@ class GPXVisualizer:
             st.pyplot(fig)
 
         # Add download button
-        original_filename = os.path.splitext(self.uploaded_file.name)[0]
+        original_filename = os.path.splitext(self.gpx_path)[1]
         output_path = f"{original_filename}.png"
         img.save(output_path)
 
