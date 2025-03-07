@@ -643,7 +643,7 @@ def draw_frame(
 
     if patches:
         ax.add_collection(LineCollection(patches, colors=colors, linewidths=linewidths))
-        ax.autoscale()
+        # ax.autoscale()
 
 
 def fig2img(fig):

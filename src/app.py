@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib.animation
+from matplotlib.animation import FuncAnimation
 import tempfile
 import os
 from src import (
@@ -218,7 +220,7 @@ class GPXVisualizer:
         if self.output_type == "Animation":
             st.sidebar.header("Animation Parameters")
             self.frames = st.sidebar.slider("Number of Frames", 100, 1000, 450)
-            self.fps = st.sidebar.slider("Frames per Second", 15, 60, 15, 15)
+            self.fps = st.sidebar.slider("Frames per Second", 15, 60, 30, 15)
 
     def _setup_border_options(self):
         """Setup border options."""
@@ -349,11 +351,27 @@ class GPXVisualizer:
         )
         ax.axis("off")
         fig.patch.set_facecolor(self.background)
-        cam = Camera(fig)
 
-        # Create frames
-        for i in range(self.frames):
-            t_val = (i / self.frames) * self.t.max()
+        # Determine the fixed axes limits based on the data
+        x_min, x_max = min(self.x), max(self.x)
+        y_min, y_max = min(self.y), max(self.y)
+        # Add a small margin
+        margin_x = 0.1 * (x_max - x_min)
+        margin_y = 0.1 * (y_max - y_min)
+
+        # Create a progress bar that can be updated from within the animation function
+        progress_bar_placeholder = st.empty()
+        progress_bar = progress_bar_placeholder.progress(0)
+
+        # Create update function for FuncAnimation
+        def update(frame):
+            ax.clear()
+            ax.axis("off")
+            # Set fixed limits
+            ax.set_xlim(x_min - margin_x, x_max + margin_x)
+            ax.set_ylim(y_min - margin_y, y_max + margin_y)
+
+            t_val = (frame / self.frames) * self.t.max()
             draw_frame(
                 fig,
                 ax,
@@ -362,15 +380,25 @@ class GPXVisualizer:
                 self.streamlines,
                 self.palette,
             )
-            cam.snap()
-            progress_bar.progress(i / self.frames)
+            # Update progress bar
+            progress_bar.progress(frame / self.frames)
+            return ax.get_children()
+
+        # Create animation
+        anim = FuncAnimation(fig, update, frames=self.frames, blit=True)
 
         # Save animation as MP4
-        anim = cam.animate()
-        original_filename = os.path.splitext(self.gpx_path)[1]
+        original_filename = os.path.splitext(os.path.basename(self.gpx_path))[0]
         os.makedirs("animations", exist_ok=True)
         output_filename = f"animations/{original_filename}.mp4"
-        anim.save(output_filename, fps=4 * self.fps, writer="ffmpeg")
+
+        # Use a lower DPI for the writer to reduce memory usage
+        writer = plt.matplotlib.animation.FFMpegWriter(
+            fps=self.fps, metadata=dict(artist="GPXVisualizer"), bitrate=1800
+        )
+
+        anim.save(output_filename, writer=writer)
+        plt.close(fig)  # Explicitly close the figure to free memory
 
         # Repeat the animation
         repeated_filename = f"animations/{original_filename}_repeated.mp4"
