@@ -6,3 +6,4 @@ opencv-python==4.11.0.86
 networkx==3.4.2
 scikit-learn==1.4.2
 numpy==1.24.4  # Updated to a compatible version
+tqdm==4.67.1
