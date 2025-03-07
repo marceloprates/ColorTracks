@@ -397,6 +397,14 @@ class GPXVisualizer:
 
         # Display the final video
         st.video(final_video_path)
+        # Add download button for video
+        with open(final_video_path, "rb") as file:
+            btn = st.download_button(
+                label="Download Video",
+                data=file,
+                file_name=f"{original_filename}.mp4",
+                mime="video/mp4",
+            )
         st.success("Animation complete!")
 
     def _generate_static_image(self):
@@ -417,8 +425,11 @@ class GPXVisualizer:
             self.palette,
         )
 
+        img = fig2img(fig)
+        # Save to temp file
+        img.save("tmp.png")
+
         if self.show_border:
-            img = fig2img(fig)
             border_img = ImageProcessor.add_text_to_border(
                 self.border.copy(),
                 user_name=self.user_name,
@@ -435,6 +446,20 @@ class GPXVisualizer:
             st.image(img, use_container_width=True)
         else:
             st.pyplot(fig)
+
+        # Add download button
+        original_filename = os.path.splitext(self.uploaded_file.name)[0]
+        output_path = f"{original_filename}.png"
+        img.save(output_path)
+
+        # Create a download button using Streamlit's built-in function
+        with open(output_path, "rb") as file:
+            btn = st.download_button(
+                label="Download Image",
+                data=file,
+                file_name=f"{original_filename}.png",
+                mime="image/png",
+            )
 
 
 def main():
