@@ -110,6 +110,9 @@ def process_and_smooth_path(
 
     np.random.seed(seed)
 
+    sinusoidal_frequency = np.random.uniform(0.5, 1.5) * sinusoidal_frequency
+    sinusoidal_amplitude = np.random.uniform(0.5, 1.5) * sinusoidal_amplitude
+
     x, y = path[:, 1], path[:, 0]
     t = np.cumsum(np.sqrt(np.diff(x) ** 2 + np.diff(y) ** 2))
 
