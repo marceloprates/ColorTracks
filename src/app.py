@@ -465,6 +465,7 @@ class GPXVisualizer:
             self.streamlines,
             self.palette,
         )
+        ax.autoscale()
 
         img = fig2img(fig)
         # Save to temp file
